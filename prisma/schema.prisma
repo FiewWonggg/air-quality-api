@@ -1,0 +1,48 @@
+// กำหนดว่าเราใช้ PostgreSQL
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// -------------------------------------------------
+// 1. ตาราง User (สำหรับทำระบบ Login)
+// -------------------------------------------------
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+// -------------------------------------------------
+// 2. ตาราง Location (จุดตรวจวัดคุณภาพอากาศ)
+// -------------------------------------------------
+model Location {
+  id           String        @id @default(uuid())
+  name         String        // เช่น "บางซ่อน", "จตุจักร"
+  latitude     Float
+  longitude    Float
+  
+  // เชื่อมความสัมพันธ์: 1 สถานที่ มีข้อมูลคุณภาพอากาศได้หลายรายการ (One-to-Many)
+  measurements Measurement[] 
+}
+
+// -------------------------------------------------
+// 3. ตาราง Measurement (ข้อมูลฝุ่นและสภาพอากาศ)
+// -------------------------------------------------
+model Measurement {
+  id          String   @id @default(uuid())
+  pm25        Float
+  aqi         Int
+  temperature Float?   // ใส่ ? หมายความว่าอาจจะไม่มีข้อมูลนี้ก็ได้ (Optional)
+  humidity    Float?
+  recordedAt  DateTime @default(now())
+
+  // เชื่อมกับตาราง Location ด้วย locationId
+  locationId  String
+  location    Location @relation(fields: [locationId], references: [id])
+}
