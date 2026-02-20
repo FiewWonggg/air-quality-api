@@ -1,6 +1,7 @@
 import express from 'express';
 import locationRoutes from './routes/location.routes';
 import measurementRoutes from './routes/measurement.routes';
+import authRoutes from './routes/auth.routes';
 
 const app = express();
 const PORT = 3000;
@@ -8,6 +9,7 @@ const PORT = 3000;
 app.use(express.json());
 
 // API Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/locations', locationRoutes);
 app.use('/api/measurements', measurementRoutes);
 
